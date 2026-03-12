@@ -785,6 +785,75 @@ tbody tr:hover { background: var(--surface-offset); }
   .overview-banner { flex-direction: column; }
   .form-grid { grid-template-columns: 1fr; }
 }
+
+/* ===================== TWO-WEEK COMPARISON MODAL ===================== */
+.modal-wide {
+  max-width: 860px;
+  width: 95vw;
+}
+.week-cols-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding: 0 var(--space-2);
+}
+.week-col-label {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+}
+.week-a-label {
+  background: rgba(59,130,246,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(59,130,246,0.3);
+}
+.week-b-label {
+  background: rgba(16,185,129,0.12);
+  color: var(--success);
+  border: 1px solid rgba(16,185,129,0.3);
+}
+.form-row-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+}
+.form-row-compare .form-group {
+  margin-bottom: 0;
+}
+.form-section-header {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--divider);
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-3);
+}
+/* Banner comparison bar */
+.banner-compare {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+.banner-week-tag {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.7rem;
+}
+.week-a-tag { background: rgba(59,130,246,0.15); color: var(--accent); }
+.week-b-tag { background: rgba(16,185,129,0.15); color: var(--success); }
+
 </style>
 </head>
 <body>
@@ -879,7 +948,8 @@ tbody tr:hover { background: var(--surface-offset); }
     <div class="overview-banner">
       <div>
         <div class="banner-title">Week at a Glance</div>
-        <div class="banner-sub" id="bannerSub">Loading metrics...</div>
+        <div class="banner-sub" id="bannerSub">Enter data to compare two weeks</div>
+        <div class="banner-compare" id="bannerCompare"></div>
       </div>
       <div class="banner-stats">
         <div>
@@ -965,7 +1035,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">CSAT Trend</div>
-            <div class="chart-subtitle">Past 8 weeks</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="csatChart"></canvas></div>
@@ -974,7 +1044,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">QA Pass Rate Trend</div>
-            <div class="chart-subtitle">Past 8 weeks</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="qaChart"></canvas></div>
@@ -999,7 +1069,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Volume &amp; Resolution</div>
-            <div class="chart-subtitle">Tickets this week</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="teamVolumeChart"></canvas></div>
@@ -1008,7 +1078,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Handle Time Trend</div>
-            <div class="chart-subtitle">Average minutes per case</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="ahtChart"></canvas></div>
@@ -1033,7 +1103,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Adherence Trend</div>
-            <div class="chart-subtitle">Schedule adherence % by week</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="adherenceChart"></canvas></div>
@@ -1042,7 +1112,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Attendance &amp; Shrinkage</div>
-            <div class="chart-subtitle">This week breakdown</div>
+            <div class="chart-subtitle">Current week (Week B)</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="shrinkageChart"></canvas></div>
@@ -1068,7 +1138,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Escalation Rate Trend</div>
-            <div class="chart-subtitle">% of cases escalated by week</div>
+            <div class="chart-subtitle">Week A vs Week B</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="escChart"></canvas></div>
@@ -1077,7 +1147,7 @@ tbody tr:hover { background: var(--surface-offset); }
         <div class="chart-card-header">
           <div>
             <div class="chart-title">Open Cases by Status</div>
-            <div class="chart-subtitle">Current open case breakdown</div>
+            <div class="chart-subtitle">Current cases (Week B)</div>
           </div>
         </div>
         <div class="chart-wrap"><canvas id="casesChart"></canvas></div>
@@ -1091,133 +1161,136 @@ tbody tr:hover { background: var(--surface-offset); }
 
 <!-- ========== EDIT MODAL ========== -->
 <div class="modal-overlay" id="editModal" onclick="closeModalOnOverlay(event)">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-header">
-      <div class="modal-title">Update This Week's Metrics</div>
-      <button class="modal-close" onclick="closeEditModal()" aria-label="Close">✕</button>
+      <div class="modal-title">Enter Week Comparison Data</div>
+      <button class="modal-close" onclick="closeEditModal()" aria-label="Close">&#10005;</button>
     </div>
 
-    <div style="margin-bottom: var(--space-6);">
+    <!-- Week column headers -->
+    <div class="week-cols-header">
+      <div class="week-col-label week-a-label">&#9655; Week A &mdash; Baseline</div>
+      <div class="week-col-label week-b-label">&#9655; Week B &mdash; Current</div>
+    </div>
+
+    <!-- Date row -->
+    <div class="form-row-compare">
       <div class="form-group">
-        <div class="form-label">Week of (Date)</div>
-        <input type="date" id="f-week" class="form-input">
+        <label class="form-label">Week A Date</label>
+        <input type="date" id="fa-week" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Week B Date</label>
+        <input type="date" id="fb-week" class="form-input">
       </div>
     </div>
 
     <!-- CSAT & Quality -->
-    <div style="margin-bottom: var(--space-2); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--success); padding-bottom: var(--space-2); border-bottom: 1px solid var(--divider);">CSAT &amp; Quality</div>
-    <div class="form-grid" style="margin-top: var(--space-4);">
-      <div class="form-group">
-        <label class="form-label">CSAT Score (%)</label>
-        <input type="number" id="f-csat" class="form-input" placeholder="e.g. 87" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">CSAT Target (%)</label>
-        <input type="number" id="f-csatTarget" class="form-input" placeholder="e.g. 85" min="0" max="100">
-      </div>
-      <div class="form-group">
-        <label class="form-label">QA Pass Rate (%)</label>
-        <input type="number" id="f-qa" class="form-input" placeholder="e.g. 92" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">QA Target (%)</label>
-        <input type="number" id="f-qaTarget" class="form-input" placeholder="e.g. 90" min="0" max="100">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Avg CSAT (1-5 scale)</label>
-        <input type="number" id="f-csatRaw" class="form-input" placeholder="e.g. 4.3" min="1" max="5" step="0.01">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Surveys Received</label>
-        <input type="number" id="f-surveys" class="form-input" placeholder="e.g. 245">
-      </div>
+    <div class="form-section-header" style="color: var(--success);">CSAT &amp; Quality</div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">CSAT Score (%)</label><input type="number" id="fa-csat" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">CSAT Score (%)</label><input type="number" id="fb-csat" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">CSAT Target (%)</label><input type="number" id="fa-csatTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+      <div class="form-group"><label class="form-label">CSAT Target (%)</label><input type="number" id="fb-csatTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">QA Pass Rate (%)</label><input type="number" id="fa-qa" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">QA Pass Rate (%)</label><input type="number" id="fb-qa" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">QA Target (%)</label><input type="number" id="fa-qaTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+      <div class="form-group"><label class="form-label">QA Target (%)</label><input type="number" id="fb-qaTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Avg Rating (1&ndash;5)</label><input type="number" id="fa-csatRaw" class="form-input" placeholder="&mdash;" min="1" max="5" step="0.01"></div>
+      <div class="form-group"><label class="form-label">Avg Rating (1&ndash;5)</label><input type="number" id="fb-csatRaw" class="form-input" placeholder="&mdash;" min="1" max="5" step="0.01"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Surveys Received</label><input type="number" id="fa-surveys" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Surveys Received</label><input type="number" id="fb-surveys" class="form-input" placeholder="&mdash;"></div>
     </div>
 
     <!-- Team Performance -->
-    <div style="margin-bottom: var(--space-2); margin-top: var(--space-6); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); padding-bottom: var(--space-2); border-bottom: 1px solid var(--divider);">Team Performance</div>
-    <div class="form-grid" style="margin-top: var(--space-4);">
-      <div class="form-group">
-        <label class="form-label">Tickets Handled</label>
-        <input type="number" id="f-tickets" class="form-input" placeholder="e.g. 1240">
-      </div>
-      <div class="form-group">
-        <label class="form-label">First Contact Resolution (%)</label>
-        <input type="number" id="f-fcr" class="form-input" placeholder="e.g. 78" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Avg Handle Time (min)</label>
-        <input type="number" id="f-aht" class="form-input" placeholder="e.g. 8.5" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">AHT Target (min)</label>
-        <input type="number" id="f-ahtTarget" class="form-input" placeholder="e.g. 9.0" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Resolution Rate (%)</label>
-        <input type="number" id="f-resolution" class="form-input" placeholder="e.g. 94" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Active Agents</label>
-        <input type="number" id="f-agents" class="form-input" placeholder="e.g. 12">
-      </div>
+    <div class="form-section-header" style="color: var(--accent);">Team Performance</div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Tickets Handled</label><input type="number" id="fa-tickets" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Tickets Handled</label><input type="number" id="fb-tickets" class="form-input" placeholder="&mdash;"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">FCR (%)</label><input type="number" id="fa-fcr" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">FCR (%)</label><input type="number" id="fb-fcr" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Avg Handle Time (min)</label><input type="number" id="fa-aht" class="form-input" placeholder="&mdash;" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Avg Handle Time (min)</label><input type="number" id="fb-aht" class="form-input" placeholder="&mdash;" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">AHT Target (min)</label><input type="number" id="fa-ahtTarget" class="form-input" placeholder="&mdash;" step="0.1"></div>
+      <div class="form-group"><label class="form-label">AHT Target (min)</label><input type="number" id="fb-ahtTarget" class="form-input" placeholder="&mdash;" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Resolution Rate (%)</label><input type="number" id="fa-resolution" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Resolution Rate (%)</label><input type="number" id="fb-resolution" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Active Agents</label><input type="number" id="fa-agents" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Active Agents</label><input type="number" id="fb-agents" class="form-input" placeholder="&mdash;"></div>
     </div>
 
     <!-- Workforce -->
-    <div style="margin-bottom: var(--space-2); margin-top: var(--space-6); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--warning); padding-bottom: var(--space-2); border-bottom: 1px solid var(--divider);">Workforce</div>
-    <div class="form-grid" style="margin-top: var(--space-4);">
-      <div class="form-group">
-        <label class="form-label">Schedule Adherence (%)</label>
-        <input type="number" id="f-adherence" class="form-input" placeholder="e.g. 91" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Adherence Target (%)</label>
-        <input type="number" id="f-adherenceTarget" class="form-input" placeholder="e.g. 90" min="0" max="100">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Attendance Rate (%)</label>
-        <input type="number" id="f-attendance" class="form-input" placeholder="e.g. 95" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Shrinkage (%)</label>
-        <input type="number" id="f-shrinkage" class="form-input" placeholder="e.g. 18" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Overtime Hours</label>
-        <input type="number" id="f-ot" class="form-input" placeholder="e.g. 24" step="0.5">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Staff on Schedule</label>
-        <input type="number" id="f-staffed" class="form-input" placeholder="e.g. 11">
-      </div>
+    <div class="form-section-header" style="color: var(--warning);">Workforce</div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Schedule Adherence (%)</label><input type="number" id="fa-adherence" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Schedule Adherence (%)</label><input type="number" id="fb-adherence" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Adherence Target (%)</label><input type="number" id="fa-adherenceTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+      <div class="form-group"><label class="form-label">Adherence Target (%)</label><input type="number" id="fb-adherenceTarget" class="form-input" placeholder="&mdash;" min="0" max="100"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Attendance Rate (%)</label><input type="number" id="fa-attendance" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Attendance Rate (%)</label><input type="number" id="fb-attendance" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Shrinkage (%)</label><input type="number" id="fa-shrinkage" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Shrinkage (%)</label><input type="number" id="fb-shrinkage" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Overtime Hours</label><input type="number" id="fa-ot" class="form-input" placeholder="&mdash;" step="0.5"></div>
+      <div class="form-group"><label class="form-label">Overtime Hours</label><input type="number" id="fb-ot" class="form-input" placeholder="&mdash;" step="0.5"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Staff on Schedule</label><input type="number" id="fa-staffed" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Staff on Schedule</label><input type="number" id="fb-staffed" class="form-input" placeholder="&mdash;"></div>
     </div>
 
     <!-- Escalations -->
-    <div style="margin-bottom: var(--space-2); margin-top: var(--space-6); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--error); padding-bottom: var(--space-2); border-bottom: 1px solid var(--divider);">Escalations &amp; Cases</div>
-    <div class="form-grid" style="margin-top: var(--space-4);">
-      <div class="form-group">
-        <label class="form-label">Escalation Rate (%)</label>
-        <input type="number" id="f-escRate" class="form-input" placeholder="e.g. 4.2" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Esc. Rate Target (%)</label>
-        <input type="number" id="f-escTarget" class="form-input" placeholder="e.g. 5.0" min="0" max="100" step="0.1">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Open Cases (Critical)</label>
-        <input type="number" id="f-openCrit" class="form-input" placeholder="e.g. 3">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Open Cases (Total)</label>
-        <input type="number" id="f-openTotal" class="form-input" placeholder="e.g. 28">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Avg Resolution Time (hrs)</label>
-        <input type="number" id="f-resTime" class="form-input" placeholder="e.g. 4.5" step="0.5">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Backlog (cases)</label>
-        <input type="number" id="f-backlog" class="form-input" placeholder="e.g. 12">
-      </div>
+    <div class="form-section-header" style="color: var(--error);">Escalations &amp; Cases</div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Escalation Rate (%)</label><input type="number" id="fa-escRate" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Escalation Rate (%)</label><input type="number" id="fb-escRate" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Esc. Rate Target (%)</label><input type="number" id="fa-escTarget" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Esc. Rate Target (%)</label><input type="number" id="fb-escTarget" class="form-input" placeholder="&mdash;" min="0" max="100" step="0.1"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Open Cases (Critical)</label><input type="number" id="fa-openCrit" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Open Cases (Critical)</label><input type="number" id="fb-openCrit" class="form-input" placeholder="&mdash;"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Open Cases (Total)</label><input type="number" id="fa-openTotal" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Open Cases (Total)</label><input type="number" id="fb-openTotal" class="form-input" placeholder="&mdash;"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Avg Resolution Time (hrs)</label><input type="number" id="fa-resTime" class="form-input" placeholder="&mdash;" step="0.5"></div>
+      <div class="form-group"><label class="form-label">Avg Resolution Time (hrs)</label><input type="number" id="fb-resTime" class="form-input" placeholder="&mdash;" step="0.5"></div>
+    </div>
+    <div class="form-row-compare">
+      <div class="form-group"><label class="form-label">Backlog (cases)</label><input type="number" id="fa-backlog" class="form-input" placeholder="&mdash;"></div>
+      <div class="form-group"><label class="form-label">Backlog (cases)</label><input type="number" id="fb-backlog" class="form-input" placeholder="&mdash;"></div>
     </div>
 
     <div class="modal-actions" style="margin-top: var(--space-8);">
@@ -1228,7 +1301,7 @@ tbody tr:hover { background: var(--surface-offset); }
       <button class="btn btn-ghost" onclick="closeEditModal()">Cancel</button>
       <button class="btn btn-primary" onclick="saveMetrics()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Save Metrics
+        Save Comparison
       </button>
     </div>
   </div>
@@ -1238,27 +1311,21 @@ tbody tr:hover { background: var(--surface-offset); }
 <div class="toast" id="toast">✓ Metrics updated</div>
 
 <script>
-// ===== DATA STORE =====
-const DEFAULT_DATA = {
-  week: new Date().toISOString().split('T')[0],
-  csat: 87.2, csatTarget: 85, csatRaw: 4.3, surveys: 245,
-  qa: 92.1, qaTarget: 90,
-  tickets: 1240, fcr: 78.5, aht: 8.2, ahtTarget: 9.0, resolution: 94.1, agents: 12,
-  adherence: 91.5, adherenceTarget: 90, attendance: 95.0, shrinkage: 18.2, ot: 22, staffed: 11,
-  escRate: 4.2, escTarget: 5.0, openCrit: 3, openTotal: 28, resTime: 4.5, backlog: 12,
-  history: {
-    csat:      [82, 84, 83, 85, 86, 87, 85, 87.2],
-    qa:        [88, 89, 90, 91, 90, 92, 91, 92.1],
-    aht:       [9.8, 9.5, 9.1, 9.0, 8.8, 8.5, 8.3, 8.2],
-    adherence: [88, 89, 90, 91, 90, 91, 92, 91.5],
-    escRate:   [6.1, 5.8, 5.5, 5.2, 4.9, 4.6, 4.4, 4.2],
-  }
-};
+// ===== TWO-WEEK DATA STORE =====
+const EMPTY_WEEK = () => ({
+  week: '',
+  csat: 0, csatTarget: 85, csatRaw: 0, surveys: 0,
+  qa: 0, qaTarget: 90,
+  tickets: 0, fcr: 0, aht: 0, ahtTarget: 9.0, resolution: 0, agents: 0,
+  adherence: 0, adherenceTarget: 90, attendance: 0, shrinkage: 0, ot: 0, staffed: 0,
+  escRate: 0, escTarget: 5.0, openCrit: 0, openTotal: 0, resTime: 0, backlog: 0,
+});
 
-let data = Object.assign({}, DEFAULT_DATA, { history: Object.assign({}, DEFAULT_DATA.history) });
+let weekA = EMPTY_WEEK();
+let weekB = EMPTY_WEEK();
 
 function exportData() {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify({ weekA, weekB }, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'leadmetrics-backup.json';
@@ -1270,17 +1337,14 @@ function importData(file) {
   reader.onload = (e) => {
     try {
       const parsed = JSON.parse(e.target.result);
-      data = Object.assign({}, DEFAULT_DATA, parsed, {
-        history: Object.assign({}, DEFAULT_DATA.history, parsed.history || {})
-      });
+      if (parsed.weekA) weekA = Object.assign(EMPTY_WEEK(), parsed.weekA);
+      if (parsed.weekB) weekB = Object.assign(EMPTY_WEEK(), parsed.weekB);
       render();
       showToast('✓ Data imported successfully');
     } catch(err) { alert('Invalid file. Please use a LeadMetrics JSON backup.'); }
   };
   reader.readAsText(file);
 }
-
-function saveData() { /* in-memory only */ }
 
 // ===== WEEK LABEL =====
 function getWeekLabel(dateStr) {
@@ -1289,10 +1353,10 @@ function getWeekLabel(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-// ===== DELTA =====
-function delta(current, prev, inverse) {
-  if (prev == null || prev === 0) return null;
-  const pct = ((current - prev) / Math.abs(prev) * 100).toFixed(1);
+// ===== DELTA (B vs A) =====
+function delta(b, a, inverse) {
+  if (a == null || a === 0) return null;
+  const pct = ((b - a) / Math.abs(a) * 100).toFixed(1);
   const up = parseFloat(pct) > 0;
   const good = inverse ? !up : up;
   return { pct: Math.abs(pct), dir: up ? 'up' : 'down', good };
@@ -1306,13 +1370,13 @@ function deltaHTML(d) {
 }
 
 // ===== PROGRESS =====
-function progressHTML(value, target, color) {
+function progressHTML(value, target) {
   const pct = Math.min(100, Math.round((value / target) * 100));
   const statusColor = value >= target ? 'var(--success)' : value >= target * 0.9 ? 'var(--warning)' : 'var(--error)';
   return `
     <div class="progress-bar-wrap">
       <div class="progress-label-row">
-        <span style="font-size: var(--text-xs); color: var(--text-faint);">vs target ${target}${color.includes('%') ? '%' : ''}</span>
+        <span style="font-size: var(--text-xs); color: var(--text-faint);">vs target ${target}</span>
         <span style="font-size: var(--text-xs); font-weight: 600; color: ${statusColor}">${pct}%</span>
       </div>
       <div class="progress-bar">
@@ -1324,30 +1388,31 @@ function progressHTML(value, target, color) {
 // ===== KPI CARD =====
 function kpiCard(label, value, unit, target, targetLabel, accentColor, d, showProgress) {
   const dHtml = d ? deltaHTML(d) : '';
-  const progHtml = (target != null && showProgress) ? progressHTML(value, target, unit) : '';
+  const progHtml = (target != null && showProgress && value > 0) ? progressHTML(value, target) : '';
+  const displayVal = value === 0 ? '—' : value;
   return `
     <div class="kpi-card" style="--card-accent: ${accentColor};" onclick="openEditModal()">
       <div class="kpi-label">${label}</div>
       <div class="kpi-value-row">
-        <span class="kpi-value">${value}</span>
-        <span class="kpi-unit">${unit}</span>
+        <span class="kpi-value">${displayVal}</span>
+        <span class="kpi-unit">${value === 0 ? '' : unit}</span>
         ${dHtml}
       </div>
-      ${targetLabel ? `<div class="kpi-target">Target: ${targetLabel}</div>` : ''}
+      ${targetLabel && value > 0 ? `<div class="kpi-target">Target: ${targetLabel}</div>` : ''}
       ${progHtml}
     </div>`;
 }
 
 // ===== CHART HELPERS =====
-const WEEK_LABELS = ['Wk-7','Wk-6','Wk-5','Wk-4','Wk-3','Wk-2','Wk-1','This'];
+const COMPARE_LABELS = ['Week A', 'Week B'];
 const charts = {};
 
 function getChartColors() {
   const dark = document.documentElement.getAttribute('data-theme') === 'dark';
   return {
-    grid:    dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-    text:    dark ? '#8892a4' : '#4a5568',
-    tooltip: dark ? '#1c2235' : '#ffffff',
+    grid:        dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    text:        dark ? '#8892a4' : '#4a5568',
+    tooltip:     dark ? '#1c2235' : '#ffffff',
     tooltipText: dark ? '#e2e8f0' : '#1a202c',
   };
 }
@@ -1358,7 +1423,7 @@ function baseChartOptions(yLabel) {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: { display: true, position: 'bottom', labels: { color: c.text, font: { size: 11 }, padding: 10, boxWidth: 12 } },
       tooltip: {
         backgroundColor: c.tooltip,
         titleColor: c.tooltipText,
@@ -1384,25 +1449,27 @@ function baseChartOptions(yLabel) {
   };
 }
 
-function makeLineChart(id, labels, datasets, yLabel) {
+function makeCompareBarChart(id, valA, valB, colorA, colorB, yLabel) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
   if (charts[id]) charts[id].destroy();
-  charts[id] = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: baseChartOptions(yLabel),
-  });
-}
-
-function makeBarChart(id, labels, datasets, yLabel) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  if (charts[id]) charts[id].destroy();
+  const opts = { ...baseChartOptions(yLabel) };
+  opts.plugins.legend = { display: true, position: 'bottom', labels: { color: getChartColors().text, font: { size: 11 }, padding: 10, boxWidth: 12 } };
   charts[id] = new Chart(ctx, {
     type: 'bar',
-    data: { labels, datasets },
-    options: { ...baseChartOptions(yLabel), barThickness: 24 },
+    data: {
+      labels: COMPARE_LABELS,
+      datasets: [{
+        label: yLabel || 'Value',
+        data: [valA, valB],
+        backgroundColor: [colorA + 'cc', colorB + 'cc'],
+        borderColor:     [colorA, colorB],
+        borderWidth: 1,
+        borderRadius: 6,
+        barThickness: 52,
+      }]
+    },
+    options: opts,
   });
 }
 
@@ -1422,10 +1489,7 @@ function makeDoughnutChart(id, labels, values, colors) {
       maintainAspectRatio: false,
       cutout: '65%',
       plugins: {
-        legend: {
-          position: 'right',
-          labels: { color: c.text, font: { size: 11 }, padding: 12, boxWidth: 12 }
-        },
+        legend: { position: 'right', labels: { color: c.text, font: { size: 11 }, padding: 12, boxWidth: 12 } },
         tooltip: {
           backgroundColor: c.tooltip,
           titleColor: c.tooltipText,
@@ -1443,149 +1507,116 @@ function makeDoughnutChart(id, labels, values, colors) {
 
 // ===== RENDER =====
 function render() {
-  const d = data;
-  const h = d.history;
-  const prev = (arr) => arr[arr.length - 2] ?? null;
+  const a = weekA;
+  const b = weekB;
 
   // Banner
-  document.getElementById('bannerSub').textContent = `Week of ${getWeekLabel(d.week)} · ${d.agents} agents`;
-  document.getElementById('bannerCsat').textContent = d.csat + '%';
-  document.getElementById('bannerQa').textContent = d.qa + '%';
-  document.getElementById('bannerAdherence').textContent = d.adherence + '%';
-  document.getElementById('bannerEscalation').textContent = d.escRate + '%';
-  document.getElementById('weekBadge').textContent = `Week of ${getWeekLabel(d.week)}`;
+  const wA = getWeekLabel(a.week);
+  const wB = getWeekLabel(b.week);
+  document.getElementById('bannerSub').textContent = `Week B: ${b.agents > 0 ? b.agents + ' agents' : '—'}`;
+  const bannerCmp = document.getElementById('bannerCompare');
+  if (bannerCmp) {
+    bannerCmp.innerHTML = `
+      <span class="banner-week-tag week-a-tag">A: ${wA}</span>
+      <span style="color:var(--text-faint);">vs</span>
+      <span class="banner-week-tag week-b-tag">B: ${wB}</span>
+    `;
+  }
+  document.getElementById('bannerCsat').textContent = b.csat > 0 ? b.csat + '%' : '—';
+  document.getElementById('bannerQa').textContent = b.qa > 0 ? b.qa + '%' : '—';
+  document.getElementById('bannerAdherence').textContent = b.adherence > 0 ? b.adherence + '%' : '—';
+  document.getElementById('bannerEscalation').textContent = b.escRate > 0 ? b.escRate + '%' : '—';
+  document.getElementById('weekBadge').textContent = wB !== '—' ? `Week B: ${wB}` : 'No data yet';
   document.getElementById('lastUpdated').textContent = `Updated: ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
 
-  // CSAT KPIs
+  // CSAT KPIs (delta: B vs A)
   const csatCards = `
-    ${kpiCard('CSAT Score', d.csat, '%', d.csatTarget, d.csatTarget + '%', '#10b981', delta(d.csat, prev(h.csat)), true)}
-    ${kpiCard('QA Pass Rate', d.qa, '%', d.qaTarget, d.qaTarget + '%', '#10b981', delta(d.qa, prev(h.qa)), true)}
-    ${kpiCard('Avg Rating', d.csatRaw, '/ 5', null, null, '#06b6d4', null, false)}
-    ${kpiCard('Surveys', d.surveys, 'received', null, null, '#8b5cf6', null, false)}
+    ${kpiCard('CSAT Score', b.csat, '%', b.csatTarget, b.csatTarget + '%', '#10b981', delta(b.csat, a.csat), true)}
+    ${kpiCard('QA Pass Rate', b.qa, '%', b.qaTarget, b.qaTarget + '%', '#10b981', delta(b.qa, a.qa), true)}
+    ${kpiCard('Avg Rating', b.csatRaw, '/ 5', null, null, '#06b6d4', delta(b.csatRaw, a.csatRaw), false)}
+    ${kpiCard('Surveys', b.surveys, 'received', null, null, '#8b5cf6', delta(b.surveys, a.surveys), false)}
   `;
   document.getElementById('csat-kpis').innerHTML = csatCards;
   document.getElementById('overview-csat-kpis').innerHTML = csatCards;
 
   // Team KPIs
-  const ahtDelta = delta(d.aht, prev(h.aht), true); // inverse — lower is better
   const teamCards = `
-    ${kpiCard('Tickets Handled', d.tickets.toLocaleString(), 'tickets', null, null, '#3b82f6', null, false)}
-    ${kpiCard('FCR Rate', d.fcr, '%', 80, '80%', '#3b82f6', null, true)}
-    ${kpiCard('Avg Handle Time', d.aht, 'min', d.ahtTarget, d.ahtTarget + ' min', '#6366f1', ahtDelta, true)}
-    ${kpiCard('Resolution Rate', d.resolution, '%', 90, '90%', '#3b82f6', null, true)}
+    ${kpiCard('Tickets Handled', b.tickets > 0 ? b.tickets.toLocaleString() : 0, 'tickets', null, null, '#3b82f6', delta(b.tickets, a.tickets), false)}
+    ${kpiCard('FCR Rate', b.fcr, '%', 80, '80%', '#3b82f6', delta(b.fcr, a.fcr), true)}
+    ${kpiCard('Avg Handle Time', b.aht, 'min', b.ahtTarget, b.ahtTarget + ' min', '#6366f1', delta(b.aht, a.aht, true), true)}
+    ${kpiCard('Resolution Rate', b.resolution, '%', 90, '90%', '#3b82f6', delta(b.resolution, a.resolution), true)}
   `;
   document.getElementById('team-kpis').innerHTML = teamCards;
   document.getElementById('overview-team-kpis').innerHTML = teamCards;
 
   // WFM KPIs
   const wfmCards = `
-    ${kpiCard('Schedule Adherence', d.adherence, '%', d.adherenceTarget, d.adherenceTarget + '%', '#f59e0b', delta(d.adherence, prev(h.adherence)), true)}
-    ${kpiCard('Attendance Rate', d.attendance, '%', 95, '95%', '#f59e0b', null, true)}
-    ${kpiCard('Shrinkage', d.shrinkage, '%', null, null, '#ef4444', delta(d.shrinkage, null, true), false)}
-    ${kpiCard('Overtime Hours', d.ot, 'hrs', null, null, '#8b5cf6', null, false)}
+    ${kpiCard('Schedule Adherence', b.adherence, '%', b.adherenceTarget, b.adherenceTarget + '%', '#f59e0b', delta(b.adherence, a.adherence), true)}
+    ${kpiCard('Attendance Rate', b.attendance, '%', 95, '95%', '#f59e0b', delta(b.attendance, a.attendance), true)}
+    ${kpiCard('Shrinkage', b.shrinkage, '%', null, null, '#ef4444', delta(b.shrinkage, a.shrinkage, true), false)}
+    ${kpiCard('Overtime Hours', b.ot, 'hrs', null, null, '#8b5cf6', delta(b.ot, a.ot, true), false)}
   `;
   document.getElementById('wfm-kpis').innerHTML = wfmCards;
   document.getElementById('overview-wfm-kpis').innerHTML = wfmCards;
 
   // Escalation KPIs
   const escCards = `
-    ${kpiCard('Escalation Rate', d.escRate, '%', d.escTarget, '≤ ' + d.escTarget + '%', '#ef4444', delta(d.escRate, prev(h.escRate), true), true)}
-    ${kpiCard('Open Critical', d.openCrit, 'cases', null, null, '#ef4444', null, false)}
-    ${kpiCard('Open Total', d.openTotal, 'cases', null, null, '#f59e0b', null, false)}
-    ${kpiCard('Avg Res. Time', d.resTime, 'hrs', null, null, '#6366f1', null, false)}
+    ${kpiCard('Escalation Rate', b.escRate, '%', b.escTarget, '≤ ' + b.escTarget + '%', '#ef4444', delta(b.escRate, a.escRate, true), true)}
+    ${kpiCard('Open Critical', b.openCrit, 'cases', null, null, '#ef4444', delta(b.openCrit, a.openCrit, true), false)}
+    ${kpiCard('Open Total', b.openTotal, 'cases', null, null, '#f59e0b', delta(b.openTotal, a.openTotal, true), false)}
+    ${kpiCard('Avg Res. Time', b.resTime, 'hrs', null, null, '#6366f1', delta(b.resTime, a.resTime, true), false)}
   `;
   document.getElementById('esc-kpis').innerHTML = escCards;
   document.getElementById('overview-esc-kpis').innerHTML = escCards;
 
   // Charts
   renderCharts();
-
-  // Escalation table
 }
 
 function renderCharts() {
-  const h = data.history;
+  const a = weekA, b = weekB;
   const blue = '#3b82f6', green = '#10b981', amber = '#f59e0b', red = '#ef4444';
+  const indigo = '#6366f1';
+  // Color scheme: Week A = blue (baseline), Week B = green (current)
+  const cA = blue, cB = green;
 
-  // CSAT
-  makeLineChart('csatChart', WEEK_LABELS, [{
-    label: 'CSAT %', data: h.csat, borderColor: green,
-    backgroundColor: green + '20', fill: true,
-    tension: 0.4, pointRadius: 3, pointBackgroundColor: green,
-  }], '%');
+  // CSAT comparison bar
+  makeCompareBarChart('csatChart', a.csat, b.csat, cA, cB, '%');
 
-  // QA
-  makeLineChart('qaChart', WEEK_LABELS, [{
-    label: 'QA Pass %', data: h.qa, borderColor: '#06b6d4',
-    backgroundColor: '#06b6d420', fill: true,
-    tension: 0.4, pointRadius: 3, pointBackgroundColor: '#06b6d4',
-  }], '%');
+  // QA comparison bar
+  makeCompareBarChart('qaChart', a.qa, b.qa, cA, cB, '%');
 
-  // Team volume bar
-  makeBarChart('teamVolumeChart',
-    ['Mon','Tue','Wed','Thu','Fri'],
-    [{
-      label: 'Tickets',
-      data: [Math.round(data.tickets*0.2), Math.round(data.tickets*0.22), Math.round(data.tickets*0.19), Math.round(data.tickets*0.21), Math.round(data.tickets*0.18)],
-      backgroundColor: blue + 'cc', borderRadius: 4,
-    }],
-    'tickets'
-  );
+  // Team volume comparison bar
+  makeCompareBarChart('teamVolumeChart', a.tickets, b.tickets, cA, cB, 'tickets');
 
-  // AHT line
-  makeLineChart('ahtChart', WEEK_LABELS, [{
-    label: 'AHT (min)', data: h.aht, borderColor: '#6366f1',
-    backgroundColor: '#6366f120', fill: true,
-    tension: 0.4, pointRadius: 3, pointBackgroundColor: '#6366f1',
-  }], 'minutes');
+  // AHT comparison bar
+  makeCompareBarChart('ahtChart', a.aht, b.aht, cA, cB, 'min');
 
-  // Adherence
-  makeLineChart('adherenceChart', WEEK_LABELS, [
-    {
-      label: 'Adherence %', data: h.adherence, borderColor: amber,
-      backgroundColor: amber + '20', fill: true,
-      tension: 0.4, pointRadius: 3, pointBackgroundColor: amber,
-    },
-    {
-      label: 'Target', data: Array(8).fill(data.adherenceTarget),
-      borderColor: amber + '50', borderDash: [4, 4],
-      fill: false, pointRadius: 0, tension: 0,
-    }
-  ], '%');
+  // Adherence comparison bar
+  makeCompareBarChart('adherenceChart', a.adherence, b.adherence, cA, cB, '%');
 
-  // Shrinkage doughnut
-  const scheduled = 40 * data.agents;
-  const shrinkHrs = Math.round(scheduled * data.shrinkage / 100);
-  const otHrs = data.ot;
-  const netHrs = scheduled - shrinkHrs + otHrs;
+  // Shrinkage doughnut (Week B)
+  const scheduled = 40 * (b.agents || 1);
+  const shrinkHrs = Math.round(scheduled * b.shrinkage / 100);
+  const otHrs = b.ot;
+  const netHrs = Math.max(0, scheduled - shrinkHrs + otHrs);
   makeDoughnutChart('shrinkageChart',
     ['Productive', 'Shrinkage', 'Overtime'],
     [netHrs, shrinkHrs, otHrs],
     ['#10b981', '#ef4444', '#8b5cf6']
   );
 
-  // Escalation rate
-  makeLineChart('escChart', WEEK_LABELS, [
-    {
-      label: 'Esc. Rate %', data: h.escRate, borderColor: red,
-      backgroundColor: red + '20', fill: true,
-      tension: 0.4, pointRadius: 3, pointBackgroundColor: red,
-    },
-    {
-      label: 'Target', data: Array(8).fill(data.escTarget),
-      borderColor: red + '50', borderDash: [4, 4],
-      fill: false, pointRadius: 0,
-    }
-  ], '%');
+  // Escalation comparison bar
+  makeCompareBarChart('escChart', a.escRate, b.escRate, cA, cB, '%');
 
-  // Cases doughnut
-  const critical = data.openCrit;
-  const high = Math.round(data.openTotal * 0.25);
-  const med = Math.round(data.openTotal * 0.40);
-  const low = data.openTotal - critical - high - med;
+  // Cases doughnut (Week B)
+  const critical = b.openCrit;
+  const high = Math.round(b.openTotal * 0.25);
+  const med  = Math.round(b.openTotal * 0.40);
+  const low  = Math.max(0, b.openTotal - critical - high - med);
   makeDoughnutChart('casesChart',
     ['Critical', 'High', 'Medium', 'Low'],
-    [critical, Math.max(0,high), Math.max(0,med), Math.max(0,low)],
+    [critical, Math.max(0, high), Math.max(0, med), low],
     ['#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6']
   );
 }
@@ -1613,32 +1644,22 @@ function showPage(id, btn) {
 
 // ===== MODAL =====
 function openEditModal() {
-  const d = data;
-  document.getElementById('f-week').value = d.week;
-  document.getElementById('f-csat').value = d.csat;
-  document.getElementById('f-csatTarget').value = d.csatTarget;
-  document.getElementById('f-csatRaw').value = d.csatRaw;
-  document.getElementById('f-surveys').value = d.surveys;
-  document.getElementById('f-qa').value = d.qa;
-  document.getElementById('f-qaTarget').value = d.qaTarget;
-  document.getElementById('f-tickets').value = d.tickets;
-  document.getElementById('f-fcr').value = d.fcr;
-  document.getElementById('f-aht').value = d.aht;
-  document.getElementById('f-ahtTarget').value = d.ahtTarget;
-  document.getElementById('f-resolution').value = d.resolution;
-  document.getElementById('f-agents').value = d.agents;
-  document.getElementById('f-adherence').value = d.adherence;
-  document.getElementById('f-adherenceTarget').value = d.adherenceTarget;
-  document.getElementById('f-attendance').value = d.attendance;
-  document.getElementById('f-shrinkage').value = d.shrinkage;
-  document.getElementById('f-ot').value = d.ot;
-  document.getElementById('f-staffed').value = d.staffed;
-  document.getElementById('f-escRate').value = d.escRate;
-  document.getElementById('f-escTarget').value = d.escTarget;
-  document.getElementById('f-openCrit').value = d.openCrit;
-  document.getElementById('f-openTotal').value = d.openTotal;
-  document.getElementById('f-resTime').value = d.resTime;
-  document.getElementById('f-backlog').value = d.backlog;
+  const ga = (sfx) => document.getElementById('fa-' + sfx);
+  const gb = (sfx) => document.getElementById('fb-' + sfx);
+  const setVal = (el, v) => { if (el) el.value = v || ''; };
+
+  const fields = ['week','csat','csatTarget','csatRaw','surveys','qa','qaTarget',
+    'tickets','fcr','aht','ahtTarget','resolution','agents',
+    'adherence','adherenceTarget','attendance','shrinkage','ot','staffed',
+    'escRate','escTarget','openCrit','openTotal','resTime','backlog'];
+
+  fields.forEach(f => {
+    const vA = weekA[f] || '';
+    const vB = weekB[f] || '';
+    setVal(ga(f), vA === 0 ? '' : vA);
+    setVal(gb(f), vB === 0 ? '' : vB);
+  });
+
   document.getElementById('editModal').classList.add('open');
 }
 
@@ -1651,45 +1672,38 @@ function closeModalOnOverlay(e) {
 }
 
 function saveMetrics() {
-  const g = id => parseFloat(document.getElementById(id).value) || 0;
-  const gi = id => parseInt(document.getElementById(id).value) || 0;
+  const ga = (sfx) => { const v = document.getElementById('fa-' + sfx); return v ? v.value : ''; };
+  const gb = (sfx) => { const v = document.getElementById('fb-' + sfx); return v ? v.value : ''; };
+  const gf = (s) => parseFloat(s) || 0;
+  const gi = (s) => parseInt(s)  || 0;
 
-  const newCsat = g('f-csat');
-  const newQa = g('f-qa');
-  const newAht = g('f-aht');
-  const newAdh = g('f-adherence');
-  const newEsc = g('f-escRate');
-
-  // Push to history (keep last 8)
-  function pushHistory(arr, val) {
-    const next = [...arr.slice(-7), val];
-    return next;
-  }
-
-  data = {
-    ...data,
-    week: document.getElementById('f-week').value || data.week,
-    csat: newCsat, csatTarget: g('f-csatTarget'), csatRaw: g('f-csatRaw'), surveys: gi('f-surveys'),
-    qa: newQa, qaTarget: g('f-qaTarget'),
-    tickets: gi('f-tickets'), fcr: g('f-fcr'), aht: newAht, ahtTarget: g('f-ahtTarget'),
-    resolution: g('f-resolution'), agents: gi('f-agents'),
-    adherence: newAdh, adherenceTarget: g('f-adherenceTarget'), attendance: g('f-attendance'),
-    shrinkage: g('f-shrinkage'), ot: g('f-ot'), staffed: gi('f-staffed'),
-    escRate: newEsc, escTarget: g('f-escTarget'), openCrit: gi('f-openCrit'),
-    openTotal: gi('f-openTotal'), resTime: g('f-resTime'), backlog: gi('f-backlog'),
-    history: {
-      csat:      pushHistory(data.history.csat, newCsat),
-      qa:        pushHistory(data.history.qa, newQa),
-      aht:       pushHistory(data.history.aht, newAht),
-      adherence: pushHistory(data.history.adherence, newAdh),
-      escRate:   pushHistory(data.history.escRate, newEsc),
-    }
+  weekA = {
+    week: ga('week'),
+    csat: gf(ga('csat')), csatTarget: gf(ga('csatTarget')), csatRaw: gf(ga('csatRaw')), surveys: gi(ga('surveys')),
+    qa: gf(ga('qa')), qaTarget: gf(ga('qaTarget')),
+    tickets: gi(ga('tickets')), fcr: gf(ga('fcr')), aht: gf(ga('aht')), ahtTarget: gf(ga('ahtTarget')),
+    resolution: gf(ga('resolution')), agents: gi(ga('agents')),
+    adherence: gf(ga('adherence')), adherenceTarget: gf(ga('adherenceTarget')), attendance: gf(ga('attendance')),
+    shrinkage: gf(ga('shrinkage')), ot: gf(ga('ot')), staffed: gi(ga('staffed')),
+    escRate: gf(ga('escRate')), escTarget: gf(ga('escTarget')), openCrit: gi(ga('openCrit')),
+    openTotal: gi(ga('openTotal')), resTime: gf(ga('resTime')), backlog: gi(ga('backlog')),
   };
 
-  saveData();
+  weekB = {
+    week: gb('week'),
+    csat: gf(gb('csat')), csatTarget: gf(gb('csatTarget')), csatRaw: gf(gb('csatRaw')), surveys: gi(gb('surveys')),
+    qa: gf(gb('qa')), qaTarget: gf(gb('qaTarget')),
+    tickets: gi(gb('tickets')), fcr: gf(gb('fcr')), aht: gf(gb('aht')), ahtTarget: gf(gb('ahtTarget')),
+    resolution: gf(gb('resolution')), agents: gi(gb('agents')),
+    adherence: gf(gb('adherence')), adherenceTarget: gf(gb('adherenceTarget')), attendance: gf(gb('attendance')),
+    shrinkage: gf(gb('shrinkage')), ot: gf(gb('ot')), staffed: gi(gb('staffed')),
+    escRate: gf(gb('escRate')), escTarget: gf(gb('escTarget')), openCrit: gi(gb('openCrit')),
+    openTotal: gi(gb('openTotal')), resTime: gf(gb('resTime')), backlog: gi(gb('backlog')),
+  };
+
   render();
   closeEditModal();
-  showToast('✓ Metrics updated');
+  showToast('✓ Comparison saved');
 }
 
 function showToast(msg) {
@@ -1712,7 +1726,6 @@ function showToast(msg) {
       toggle.innerHTML = theme === 'dark'
         ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
         : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
-      // Rebuild charts with new theme colors
       setTimeout(renderCharts, 50);
     });
   }
@@ -1722,5 +1735,6 @@ function showToast(msg) {
 // ===== INIT =====
 render();
 </script>
+
 </body>
 </html>
